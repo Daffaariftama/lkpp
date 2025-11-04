@@ -1,36 +1,33 @@
 // components/consultation/multi-step-form.tsx
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  consultationSchema,
-  type ConsultationFormData,
-} from "~/lib/validations/consultation";
-import { DataPemohonForm } from "./data-pemohon-form";
-import { DataPengadaanForm } from "./data-pengadaan-form";
-import { PermasalahanForm } from "./permasalahan-form";
-import { PdfTemplate } from "./pdf-template";
-import { SignaturePad } from "./signature-pad";
-import { api } from "~/trpc/react";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent } from "~/components/ui/card";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
   FileText,
-  Building2,
-  Printer,
-  User,
-  Settings,
   Flag,
-  Smartphone,
-  Lock,
   PenLine,
+  Printer,
+  Settings,
+  User,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import {
+  consultationSchema,
+  type ConsultationFormData,
+} from "~/lib/validations/consultation";
+import { api } from "~/trpc/react";
+import { DataPemohonForm } from "./data-pemohon-form";
+import { DataPengadaanForm } from "./data-pengadaan-form";
+import { PdfTemplate } from "./pdf-template";
+import { PermasalahanForm } from "./permasalahan-form";
+import { SignaturePad } from "./signature-pad";
 
 const steps = [
   {
@@ -69,7 +66,7 @@ const steps = [
   },
 ];
 
-const defaultValues: ConsultationFormData = {
+const defaultValues: Partial<ConsultationFormData> = {
   // Page 1: Data Pemohon
   tanggal: "",
   waktu: "",
@@ -86,7 +83,6 @@ const defaultValues: ConsultationFormData = {
   namaPaketPengadaan: "",
   nilaiKontrak: "",
   TTDKontrak: false,
-  kontrak: "",
   jenisKontrak: "",
   wilayahPengadaan: "",
   sumberAnggaran: "",
@@ -96,6 +92,7 @@ const defaultValues: ConsultationFormData = {
   // Page 3: Permasalahan
   jenisPermasalahan: "",
   kronologi: "",
+  signatureData: undefined,
 };
 
 export function MultiStepConsultationForm() {
@@ -112,15 +109,18 @@ export function MultiStepConsultationForm() {
   const formRef = useRef<HTMLDivElement>(null);
 
   const methods = useForm<ConsultationFormData>({
-    resolver: zodResolver(consultationSchema),
-    defaultValues,
+    resolver: zodResolver(consultationSchema) as any,
+    defaultValues: defaultValues as ConsultationFormData,
     mode: "onChange",
   });
 
   const createConsultation = api.consultation.create.useMutation({
     onSuccess: (data, variables) => {
       setIsSubmitting(false);
-      setSubmittedData({ ...variables, signatureData });
+      setSubmittedData({
+        ...variables,
+        signatureData: signatureData ?? undefined,
+      });
       setIsFormLocked(true);
       setTimeout(() => setShowPrintView(true), 300);
     },
@@ -194,7 +194,7 @@ export function MultiStepConsultationForm() {
           };
 
           const errorMessages = errorFields.map(
-            (field) => fieldNames[field] || field,
+            (field) => fieldNames[field] ?? field,
           );
 
           alert(
@@ -222,10 +222,11 @@ export function MultiStepConsultationForm() {
     }
   };
 
-  const handleSignatureSave = (signature: string) => {
+  const handleSignatureSave = async (signature: string) => {
     setSignatureData(signature);
     // Lanjutkan dengan submit setelah tanda tangan disimpan
-    submitFormData();
+    methods.setValue("signatureData", signature ?? undefined);
+    await submitFormData();
   };
 
   const submitFormData = async () => {

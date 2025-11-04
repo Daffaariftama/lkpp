@@ -77,51 +77,10 @@ export class PdfService {
 
         // Use very simple html2canvas options
         const canvas = await html2canvas(element, {
-          scale: 1.5, // Lower scale for better compatibility
           useCORS: true,
           logging: false,
-          backgroundColor: '#ffffff',
-          removeContainer: false,
+          background: '#ffffff',
           allowTaint: false,
-          foreignObjectRendering: false,
-          imageTimeout: 0,
-          onclone: (clonedDoc, element) => {
-            // Further simplify cloned element
-            const clonedElement = clonedDoc.getElementById(elementId);
-            if (clonedElement) {
-              Object.assign(clonedElement.style, {
-                background: '#ffffff',
-                overflow: 'visible',
-                position: 'static',
-                top: 'auto',
-                left: 'auto'
-              });
-
-              // Remove all complex styles in clone
-              const allElements = clonedElement.getElementsByTagName('*');
-              Array.from(allElements).forEach((el: any) => {
-                if (el.style) {
-                  el.style.backdropFilter = 'none';
-                  el.style.backgroundImage = 'none';
-                  el.style.boxShadow = 'none';
-                  el.style.filter = 'none';
-                  el.style.transform = 'none';
-                  el.style.transition = 'none';
-                  el.style.animation = 'none';
-                  
-                  if (!el.style.backgroundColor || el.style.backgroundColor.includes('gradient')) {
-                    el.style.backgroundColor = '#ffffff';
-                  }
-                }
-              });
-
-              // Hide action buttons in clone
-              const clonedButtons = clonedElement.querySelector('.print\\:hidden');
-              if (clonedButtons) {
-                (clonedButtons as HTMLElement).style.display = 'none';
-              }
-            }
-          }
         });
 
         // Restore original styles

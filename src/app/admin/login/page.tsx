@@ -1,11 +1,11 @@
-// app/admin/login/page.tsx - Compact Version dengan Disclaimer
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AdminLogin() {
+// Komponen utama yang menggunakan useSearchParams
+function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -124,5 +124,28 @@ export default function AdminLogin() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Fallback component untuk loading
+function LoginFallback() {
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      <div className="max-w-md w-full space-y-6">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Memuat halaman login...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Komponen utama dengan Suspense boundary
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginContent />
+    </Suspense>
   );
 }

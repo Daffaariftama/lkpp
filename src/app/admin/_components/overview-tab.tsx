@@ -53,16 +53,23 @@ const STATUS_COLORS = {
   REJECTED: CHART_COLORS.danger,
 };
 
-interface StatusChartData {
+// Interface untuk data pie chart yang kompatibel dengan Recharts
+interface PieChartData {
   name: string;
   value: number;
   color: string;
+  [key: string]: string | number; // Tambahkan index signature ini
 }
 
+// Type untuk PieChart props
 interface PieLabelProps {
-  name: string;
-  value: number;
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
   percent: number;
+  index: number;
 }
 
 export default function OverviewTab() {
@@ -101,7 +108,7 @@ export default function OverviewTab() {
     };
 
     const config =
-      statusConfig[status as keyof typeof statusConfig] ||
+      statusConfig[status as keyof typeof statusConfig] ??
       statusConfig.SUBMITTED;
     return (
       <span
@@ -116,8 +123,8 @@ export default function OverviewTab() {
     return new Date(dateString).toLocaleDateString("id-ID");
   };
 
-  // Data untuk charts
-  const statusChartData: StatusChartData[] = statistics
+  // Data untuk charts - PERBAIKAN: Gunakan tipe yang benar
+  const statusChartData: PieChartData[] = statistics
     ? [
         {
           name: "Submitted",
@@ -125,7 +132,7 @@ export default function OverviewTab() {
           color: STATUS_COLORS.SUBMITTED,
         },
         {
-          name: "In Review",
+          name: "In Review", 
           value: statistics.byStatus.inReview,
           color: STATUS_COLORS.IN_REVIEW,
         },
@@ -156,7 +163,39 @@ export default function OverviewTab() {
     { name: "Jun", submissions: 65, completed: 50 },
   ];
 
-  const recentActivities = consultationsData?.consultations.slice(0, 5) || [];
+  const recentActivities = consultationsData?.consultations.slice(0, 5) ?? [];
+
+  // Custom label function untuk pie chart
+  // Custom label function untuk pie chart
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+}: any) => {
+  if (percent === 0) return null;
+  
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+      fontSize={12}
+      fontWeight="bold"
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
 
   return (
     <div className="space-y-8">
@@ -170,7 +209,7 @@ export default function OverviewTab() {
                   Total Konsultasi
                 </p>
                 <p className="mt-2 text-3xl font-bold text-slate-800">
-                  {statistics?.total || 0}
+                  {statistics?.total ?? 0}
                 </p>
                 <div className="mt-2 flex items-center gap-1">
                   <TrendingUp className="h-4 w-4 text-emerald-600" />
@@ -194,8 +233,8 @@ export default function OverviewTab() {
                   In Progress
                 </p>
                 <p className="mt-2 text-3xl font-bold text-slate-800">
-                  {(statistics?.byStatus.inReview || 0) +
-                    (statistics?.byStatus.processed || 0)}
+                  {(statistics?.byStatus.inReview ?? 0) +
+                    (statistics?.byStatus.processed ?? 0)}
                 </p>
                 <div className="mt-2 flex items-center gap-1">
                   <Clock className="h-4 w-4 text-amber-600" />
@@ -219,7 +258,7 @@ export default function OverviewTab() {
                   Completed
                 </p>
                 <p className="mt-2 text-3xl font-bold text-slate-800">
-                  {statistics?.byStatus.completed || 0}
+                  {statistics?.byStatus.completed ?? 0}
                 </p>
                 <div className="mt-2 flex items-center gap-1">
                   <CheckCircle className="h-4 w-4 text-emerald-600" />
@@ -287,9 +326,7 @@ export default function OverviewTab() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value, percent }: PieLabelProps) =>
-                      `${name}: ${value} (${(percent * 100).toFixed(0)}%)`
-                    }
+                    label={renderCustomizedLabel}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -301,7 +338,8 @@ export default function OverviewTab() {
                       ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => [`${value} konsultasi`, "Jumlah"]}
+                    formatter={(value: number) => [`${value} konsultasi`, "Jumlah"]}
+                    labelFormatter={(name) => `Status: ${name}`}
                     contentStyle={{
                       backgroundColor: "white",
                       border: "1px solid #e2e8f0",
@@ -309,11 +347,12 @@ export default function OverviewTab() {
                       boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                     }}
                   />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
 
               {statusChartData.every((item) => item.value === 0) && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex h-80 items-center justify-center">
                   <div className="text-center text-slate-500">
                     <BarChart3 className="mx-auto mb-2 h-12 w-12 text-slate-300" />
                     <p className="text-sm font-medium">
@@ -462,7 +501,7 @@ export default function OverviewTab() {
                     <span className="text-xs text-slate-500">
                       (
                       {Math.round(
-                        (item.value / (statistics?.total || 1)) * 100,
+                        (item.value / (statistics?.total ?? 1)) * 100,
                       )}
                       %)
                     </span>

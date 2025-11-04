@@ -18,7 +18,6 @@ export const consultationSchema = z.object({
   namaPaketPengadaan: z.string().optional(),
   nilaiKontrak: z.string().optional(),
   TTDKontrak: z.boolean().default(false),
-  kontrak: z.string().optional(),
   jenisKontrak: z.string().optional(),
   wilayahPengadaan: z.string().min(1, "Wilayah pengadaan harus diisi"),
   sumberAnggaran: z.string().optional(),
@@ -28,6 +27,9 @@ export const consultationSchema = z.object({
   // Page 3: Permasalahan
   jenisPermasalahan: z.string().min(1, "Jenis permasalahan harus diisi"),
   kronologi: z.string().optional(),
+  
+  // Tambahkan field signatureData
+  signatureData: z.string().optional(),
 });
 
 export type ConsultationFormData = z.infer<typeof consultationSchema>;

@@ -1,4 +1,5 @@
 // server/api/routers/admin.ts
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
@@ -13,7 +14,7 @@ export const adminRouter = createTRPCRouter({
         status: z.string().optional(),
         sortBy: z.string().default("createdAt"),
         sortOrder: z.enum(["asc", "desc"]).default("desc"),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { page, limit, search, status, sortBy, sortOrder } = input;
@@ -24,9 +25,24 @@ export const adminRouter = createTRPCRouter({
           search
             ? {
                 OR: [
-                  { nama: { contains: search, mode: "insensitive" } },
-                  { instansi: { contains: search, mode: "insensitive" } },
-                  { jenisPermasalahan: { contains: search, mode: "insensitive" } },
+                  {
+                    nama: {
+                      contains: search,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    instansi: {
+                      contains: search,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    jenisPermasalahan: {
+                      contains: search,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
                 ],
               }
             : {},
@@ -80,7 +96,7 @@ export const adminRouter = createTRPCRouter({
           provinsiPemohon: z.string().optional(),
           noTelp: z.string().optional(),
           jumlahTamu: z.number().optional(),
-          
+
           // Data Pengadaan
           idPaketPengadaan: z.string().optional().nullable(),
           namaPaketPengadaan: z.string().optional().nullable(),
@@ -91,19 +107,19 @@ export const adminRouter = createTRPCRouter({
           sumberAnggaran: z.string().optional().nullable(),
           jenisPengadaan: z.string().optional(),
           metodePemilihan: z.string().optional(),
-          
+
           // Permasalahan
           jenisPermasalahan: z.string().optional(),
           kronologi: z.string().optional().nullable(),
-          
+
           // Metadata
           status: z.string().optional(),
         }),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { id, data } = input;
-      
+
       const consultation = await ctx.db.consultation.update({
         where: { id },
         data: {
@@ -139,7 +155,7 @@ export const adminRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         status: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const consultation = await ctx.db.consultation.update({
@@ -159,21 +175,15 @@ export const adminRouter = createTRPCRouter({
 
   // Get statistics
   getStatistics: publicProcedure.query(async ({ ctx }) => {
-    const [
-      total,
-      submitted,
-      inReview,
-      processed,
-      completed,
-      rejected,
-    ] = await Promise.all([
-      ctx.db.consultation.count(),
-      ctx.db.consultation.count({ where: { status: "SUBMITTED" } }),
-      ctx.db.consultation.count({ where: { status: "IN_REVIEW" } }),
-      ctx.db.consultation.count({ where: { status: "PROCESSED" } }),
-      ctx.db.consultation.count({ where: { status: "COMPLETED" } }),
-      ctx.db.consultation.count({ where: { status: "REJECTED" } }),
-    ]);
+    const [total, submitted, inReview, processed, completed, rejected] =
+      await Promise.all([
+        ctx.db.consultation.count(),
+        ctx.db.consultation.count({ where: { status: "SUBMITTED" } }),
+        ctx.db.consultation.count({ where: { status: "IN_REVIEW" } }),
+        ctx.db.consultation.count({ where: { status: "PROCESSED" } }),
+        ctx.db.consultation.count({ where: { status: "COMPLETED" } }),
+        ctx.db.consultation.count({ where: { status: "REJECTED" } }),
+      ]);
 
     return {
       total,
