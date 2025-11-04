@@ -1,6 +1,6 @@
 // components/consultation/data-pengadaan-form.tsx
+import { motion } from "framer-motion";
 import { useFormContext } from "react-hook-form";
-import type { ConsultationFormData } from "~/lib/validations/consultation";
 import {
   FormControl,
   FormField,
@@ -16,8 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Checkbox } from "~/components/ui/checkbox"; // ✅ Import Checkbox
-import { motion } from "framer-motion";
+import type { ConsultationFormData } from "~/lib/validations/consultation";
 
 interface DataPengadaanFormProps {
   isMobile?: boolean;
@@ -186,65 +185,12 @@ export function DataPengadaanForm({ isMobile = false, isFormLocked = false }: Da
               <FormLabel className={`text-gray-700 font-semibold ${
                 isMobile ? 'text-sm' : 'text-base'
               }`}>
-                Nilai Kontrak
+                Nilai Kontrak/Pagu Anggaran
               </FormLabel>
               <FormControl>
                 <Input 
+                type="number"
                   placeholder="Masukkan nilai kontrak" 
-                  {...field} 
-                  value={field.value || ""}
-                  disabled={isFormLocked}
-                  className={`border-gray-300 focus:border-blue-500 focus:ring-blue-500 transition-all duration-300 ${
-                    isMobile ? 'rounded-lg h-10 text-sm' : 'rounded-xl h-12 text-base'
-                  } ${isFormLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                />
-              </FormControl>
-              <FormMessage className="text-red-500 font-medium text-sm" />
-            </FormItem>
-          )}
-        />
-
-        {/* TTD Kontrak * */}
-        <FormField
-          control={form.control}
-          name="TTDKontrak"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-gray-300 p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isFormLocked}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className={`text-gray-700 font-semibold ${
-                  isMobile ? 'text-sm' : 'text-base'
-                }`}>
-                  TTD Kontrak *
-                </FormLabel>
-                <p className="text-sm text-gray-600">
-                  Centang jika kontrak sudah ditandatangani
-                </p>
-              </div>
-            </FormItem>
-          )}
-        />
-
-        {/* Kontrak */}
-        <FormField
-          control={form.control}
-          name="kontrak"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className={`text-gray-700 font-semibold ${
-                isMobile ? 'text-sm' : 'text-base'
-              }`}>
-                Kontrak
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Masukkan nomor kontrak" 
                   {...field} 
                   value={field.value || ""}
                   disabled={isFormLocked}

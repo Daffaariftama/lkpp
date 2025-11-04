@@ -119,7 +119,6 @@ export default function ConsultationDetailPage() {
     namaPaketPengadaan: "",
     nilaiKontrak: "",
     TTDKontrak: false,
-    kontrak: "",
     jenisKontrak: "",
     wilayahPengadaan: "",
     sumberAnggaran: "",
@@ -151,7 +150,6 @@ export default function ConsultationDetailPage() {
         namaPaketPengadaan: consultation.namaPaketPengadaan || "",
         nilaiKontrak: consultation.nilaiKontrak || "",
         TTDKontrak: consultation.TTDKontrak || false,
-        kontrak: consultation.kontrak || "",
         jenisKontrak: consultation.jenisKontrak || "",
         wilayahPengadaan: consultation.wilayahPengadaan || "",
         sumberAnggaran: consultation.sumberAnggaran || "",
@@ -207,7 +205,6 @@ export default function ConsultationDetailPage() {
         namaPaketPengadaan: consultation.namaPaketPengadaan || "",
         nilaiKontrak: consultation.nilaiKontrak || "",
         TTDKontrak: consultation.TTDKontrak || false,
-        kontrak: consultation.kontrak || "",
         jenisKontrak: consultation.jenisKontrak || "",
         wilayahPengadaan: consultation.wilayahPengadaan || "",
         sumberAnggaran: consultation.sumberAnggaran || "",
@@ -688,18 +685,6 @@ export default function ConsultationDetailPage() {
                         />
                       ) : (
                         <DisplayField value={consultation.nilaiKontrak} />
-                      )}
-                    </FieldWrapper>
-
-                    <FieldWrapper label="Kontrak" icon={FileText}>
-                      {isEditMode ? (
-                        <Input
-                          value={formData.kontrak}
-                          onChange={(e) => handleChange("kontrak", e.target.value)}
-                          className="border-slate-300"
-                        />
-                      ) : (
-                        <DisplayField value={consultation.kontrak} />
                       )}
                     </FieldWrapper>
                   </div>

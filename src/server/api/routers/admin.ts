@@ -86,7 +86,6 @@ export const adminRouter = createTRPCRouter({
           namaPaketPengadaan: z.string().optional().nullable(),
           nilaiKontrak: z.string().optional().nullable(),
           TTDKontrak: z.boolean().optional(),
-          kontrak: z.string().optional().nullable(),
           jenisKontrak: z.string().optional().nullable(),
           wilayahPengadaan: z.string().optional(),
           sumberAnggaran: z.string().optional().nullable(),
