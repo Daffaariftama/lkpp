@@ -355,7 +355,7 @@ async function seedConsultations() {
           kronologi: "Klausul garansi dan maintenance tidak jelas",
           signatureData:
             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iMTAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EYXRhIDEzPC90ZXh0Pjwvc3ZnPg==",
-          status: "APPROVED",
+          status: "REJECTED",
           isLocked: true,
         },
         {
@@ -436,7 +436,7 @@ async function seedConsultations() {
           kronologi: "Klausul after sales service perlu penyesuaian",
           signatureData:
             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iMTAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EYXRhIDE2PC90ZXh0Pjwvc3ZnPg==",
-          status: "APPROVED",
+          status: "REJECTED",
           isLocked: true,
         },
         {
@@ -517,7 +517,7 @@ async function seedConsultations() {
           kronologi: "Klausul bea masuk dan pajak import perlu peninjauan",
           signatureData:
             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iMTAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EYXRhIDE5PC90ZXh0Pjwvc3ZnPg==",
-          status: "APPROVED",
+          status: "REJECTED",
           isLocked: true,
         },
         {
@@ -598,7 +598,7 @@ async function seedConsultations() {
           kronologi: "Klausul maintenance jangka panjang perlu review",
           signatureData:
             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iMTAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EYXRhIDIyPC90ZXh0Pjwvc3ZnPg==",
-          status: "APPROVED",
+          status: "REJECTED",
           isLocked: true,
         },
         {
@@ -679,7 +679,7 @@ async function seedConsultations() {
           kronologi: "Klausul service level agreement perlu negosiasi",
           signatureData:
             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iMTAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWaldC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RGF0YSAyNTwvdGV4dD48L3N2Zz4=",
-          status: "APPROVED",
+          status: "REJECTED",
           isLocked: true,
         },
         {
@@ -761,7 +761,7 @@ async function seedConsultations() {
           kronologi: "Klausul pembayaran progresif perlu penyesuaian",
           signatureData:
             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iMTAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EYXRhIDI4PC90ZXh0Pjwvc3ZnPg==",
-          status: "APPROVED",
+          status: "REJECTED",
           isLocked: true,
         },
         {
@@ -815,7 +815,7 @@ async function seedConsultations() {
           kronologi: "Dokumen keselamatan kapal perlu kelengkapan",
           signatureData:
             "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB2aWV3Qm94PSIwIDAgMjAwIDgwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iMTAwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EYXRhIDMwPC90ZXh0Pjwvc3ZnPg==",
-          status: "APPROVED",
+          status: "REJECTED",
           isLocked: true,
         },
       ],

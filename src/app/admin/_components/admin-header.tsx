@@ -1,7 +1,6 @@
 // app/admin/_components/admin-header.tsx
 "use client";
 
-import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
@@ -17,10 +16,6 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ user, activeTab, onTabChange }: AdminHeaderProps) {
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: "/admin/login" });
-  };
-
   return (
     <>
       {/* Header */}
@@ -49,10 +44,10 @@ export default function AdminHeader({ user, activeTab, onTabChange }: AdminHeade
             <div className="flex items-center gap-4">
               <div className="hidden text-right sm:block">
                 <p className="text-sm font-medium text-slate-800">
-                  {user?.name || "Administrator"}
+                  {user?.name ?? "Administrator"}
                 </p>
                 <p className="text-xs text-slate-600">
-                  {user?.email || "admin@lkpp.go.id"}
+                  {user?.email ?? "admin@lkpp.go.id"}
                 </p>
               </div>
               
@@ -67,14 +62,7 @@ export default function AdminHeader({ user, activeTab, onTabChange }: AdminHeade
                 </Link>
               </Button>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSignOut}
-                className="border-slate-300 hover:bg-slate-50"
-              >
-                <span className="text-xs sm:text-sm">Keluar</span>
-              </Button>
+              {/* Tombol Keluar dihapus */}
             </div>
           </div>
         </div>
