@@ -1,4 +1,3 @@
-// app/admin/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,10 +9,18 @@ import OverviewTab from "./_components/overview-tab";
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"overview" | "data">("overview");
   const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
-  // Cek status login dan waktu login
+  // Cek apakah sudah di client-side
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Cek status login dan waktu login - hanya di client
+  useEffect(() => {
+    if (!isClient) return;
+
     const isLoggedIn = localStorage.getItem("isLoggedIn");
     const loginTime = localStorage.getItem("loginTime");
     
@@ -53,7 +60,7 @@ export default function AdminDashboard() {
 
     // Cleanup timer
     return () => clearTimeout(logoutTimer);
-  }, [router]);
+  }, [isClient, router]);
 
   // User data dummy
   const userData = {
@@ -63,7 +70,7 @@ export default function AdminDashboard() {
   };
 
   // Tampilkan loading spinner saat checking authentication
-  if (isLoading) {
+  if (isLoading || !isClient) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
