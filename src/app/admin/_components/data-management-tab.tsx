@@ -1,12 +1,12 @@
 // app/admin/_components/data-management-tab.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import {
+  Building,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
   Download,
-  Edit,
   Eye,
   FileText,
   Filter,
@@ -14,20 +14,20 @@ import {
   MoreHorizontal,
   Search,
   Trash2,
-  CheckCircle,
-  Building,
-  Users,
+  Users
 } from "lucide-react";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
+import { useEffect, useState } from "react";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Input } from "~/components/ui/input";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
   Table,
@@ -37,12 +37,6 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
 import { api } from "~/trpc/react";
 
 export default function DataManagementTab() {
@@ -343,15 +337,6 @@ export default function DataManagementTab() {
                                   href={`/admin/consultation/${consultation.id}`}
                                   className="flex cursor-pointer items-center gap-2 text-slate-700"
                                 >
-                                  <Edit className="h-4 w-4" />
-                                  Edit Data
-                                </Link>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem asChild>
-                                <Link
-                                  href={`/admin/consultation/${consultation.id}`}
-                                  className="flex cursor-pointer items-center gap-2 text-slate-700"
-                                >
                                   <Eye className="h-4 w-4" />
                                   Lihat Detail
                                 </Link>
@@ -440,54 +425,97 @@ export default function DataManagementTab() {
 
           {/* Pagination */}
           {consultationsData && consultationsData.pagination.pages > 1 && (
-            <div className="mt-6 flex items-center justify-between">
-              <div className="text-sm text-slate-700">
+            <div className="mt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
+              {/* Info Data */}
+              <div className="text-center text-sm text-slate-700 sm:text-left">
                 Menampilkan {(page - 1) * 10 + 1} -{" "}
                 {Math.min(page * 10, consultationsData.pagination.total)} dari{" "}
                 {consultationsData.pagination.total} data
               </div>
-              <div className="flex gap-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(page - 1)}
-                  disabled={page === 1}
-                  className="border-slate-300 hover:bg-slate-50"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                {Array.from(
-                  {
-                    length: Math.min(5, consultationsData.pagination.pages),
-                  },
-                  (_, i) => {
-                    const pageNumber = i + 1;
-                    return (
-                      <Button
-                        key={pageNumber}
-                        variant={page === pageNumber ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setPage(pageNumber)}
-                        className={
-                          page === pageNumber
-                            ? "border-transparent bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
-                            : "border-slate-300 hover:bg-slate-50"
-                        }
-                      >
-                        {pageNumber}
-                      </Button>
-                    );
-                  },
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPage(page + 1)}
-                  disabled={page === consultationsData.pagination.pages}
-                  className="border-slate-300 hover:bg-slate-50"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+
+              {/* Navigation */}
+              <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row">
+                {/* Page Input - di atas untuk mobile */}
+                <div className="order-1 flex items-center gap-2 text-sm sm:order-2">
+                  <span className="xs:inline hidden">Page</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max={consultationsData.pagination.pages}
+                    value={page}
+                    onChange={(e) => {
+                      const newPage = parseInt(e.target.value);
+                      if (
+                        newPage >= 1 &&
+                        newPage <= consultationsData.pagination.pages
+                      ) {
+                        setPage(newPage);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      let newPage = parseInt(e.target.value);
+                      if (isNaN(newPage) || newPage < 1) newPage = 1;
+                      if (newPage > consultationsData.pagination.pages)
+                        newPage = consultationsData.pagination.pages;
+                      setPage(newPage);
+                    }}
+                    className="w-16 rounded border border-slate-300 px-2 py-1 text-center"
+                  />
+                  <span>of {consultationsData.pagination.pages}</span>
+                </div>
+
+                {/* Button Group */}
+                <div className="order-2 flex items-center gap-1 sm:order-1">
+                  {/* First Page */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(1)}
+                    disabled={page === 1}
+                    className="xs:flex hidden border-slate-300 hover:bg-slate-50"
+                  >
+                    <span className="hidden sm:inline">First</span>
+                    <ChevronLeft className="h-4 w-4 sm:ml-1" />
+                    <ChevronLeft className="xs:block -ml-2 hidden h-4 w-4" />
+                  </Button>
+
+                  {/* Previous Page */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                    className="border-slate-300 hover:bg-slate-50"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="xs:inline ml-1 hidden">Prev</span>
+                  </Button>
+
+                  {/* Next Page */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(page + 1)}
+                    disabled={page === consultationsData.pagination.pages}
+                    className="border-slate-300 hover:bg-slate-50"
+                  >
+                    <span className="xs:inline mr-1 hidden">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+
+                  {/* Last Page */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(consultationsData.pagination.pages)}
+                    disabled={page === consultationsData.pagination.pages}
+                    className="xs:flex hidden border-slate-300 hover:bg-slate-50"
+                  >
+                    <ChevronRight className="xs:block -mr-2 hidden h-4 w-4" />
+                    <ChevronRight className="mr-1 h-4 w-4" />
+                    <span className="hidden sm:inline">Last</span>
+                  </Button>
+                </div>
               </div>
             </div>
           )}

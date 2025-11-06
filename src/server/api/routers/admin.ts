@@ -173,62 +173,50 @@ export const adminRouter = createTRPCRouter({
       };
     }),
 
- // Get statistics - Single query approach
-getStatistics: publicProcedure.query(async ({ ctx }) => {
-  try {
-    // Single query menggunakan groupBy untuk semua data
-    const statusCounts = await ctx.db.consultation.groupBy({
-      by: ['status'],
-      _count: {
-        _all: true,
-      },
-    });
+  // Get statistics
+  // Alternatif getStatistics yang lebih sederhana
+  getStatistics: publicProcedure.query(async ({ ctx }) => {
+    try {
+      // Sequential queries untuk menghindari race condition
+      const total = await ctx.db.consultation.count();
+      const submitted = await ctx.db.consultation.count({
+        where: { status: "SUBMITTED" },
+      });
+      const inReview = await ctx.db.consultation.count({
+        where: { status: "IN_REVIEW" },
+      });
+      const processed = await ctx.db.consultation.count({
+        where: { status: "PROCESSED" },
+      });
+      const completed = await ctx.db.consultation.count({
+        where: { status: "COMPLETED" },
+      });
+      const rejected = await ctx.db.consultation.count({
+        where: { status: "REJECTED" },
+      });
 
-    // Hitung total dari hasil groupBy
-    const total = statusCounts.reduce((sum, item) => sum + item._count._all, 0);
-
-    // Inisialisasi default values untuk semua status
-    const byStatus = {
-      submitted: 0,
-      inReview: 0,
-      processed: 0,
-      completed: 0,
-      rejected: 0,
-      draft: 0, // Tambahkan draft jika ada
-    };
-
-    // Map hasil query ke object byStatus
-    statusCounts.forEach(item => {
-      const statusKey = item.status.toLowerCase() as keyof typeof byStatus;
-      if (statusKey in byStatus) {
-        byStatus[statusKey] = item._count._all;
-      }
-    });
-
-    return {
-      total,
-      byStatus: {
-        submitted: byStatus.submitted,
-        inReview: byStatus.inReview,
-        processed: byStatus.processed,
-        completed: byStatus.completed,
-        rejected: byStatus.rejected,
-      },
-    };
-  } catch (error) {
-    console.error("Error in getStatistics:", error);
-    
-    // Fallback data yang aman
-    return {
-      total: 0,
-      byStatus: {
-        submitted: 0,
-        inReview: 0,
-        processed: 0,
-        completed: 0,
-        rejected: 0,
-      },
-    };
-  }
-}),
+      return {
+        total,
+        byStatus: {
+          submitted,
+          inReview,
+          processed,
+          completed,
+          rejected,
+        },
+      };
+    } catch (error) {
+      console.error("Error in getStatistics:", error);
+      return {
+        total: 0,
+        byStatus: {
+          submitted: 0,
+          inReview: 0,
+          processed: 0,
+          completed: 0,
+          rejected: 0,
+        },
+      };
+    }
+  }),
 });
