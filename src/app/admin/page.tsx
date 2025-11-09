@@ -7,7 +7,7 @@ import DataManagementTab from "./_components/data-management-tab";
 import OverviewTab from "./_components/overview-tab";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"overview" | "data">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "data">("data");
   const [isLoading, setIsLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();

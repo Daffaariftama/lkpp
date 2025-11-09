@@ -254,4 +254,41 @@ export const consultationRouter = createTRPCRouter({
         },
       };
     }),
+  getAllForExport: publicProcedure.query(async ({ ctx }) => {
+    const consultations = await ctx.db.consultation.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        tanggal: true,
+        waktu: true,
+        nama: true,
+        instansi: true,
+        jabatan: true,
+        alamat: true,
+        provinsiPemohon: true,
+        noTelp: true,
+        jumlahTamu: true,
+        idPaketPengadaan: true,
+        namaPaketPengadaan: true,
+        nilaiKontrak: true,
+        TTDKontrak: true,
+        jenisKontrak: true,
+        wilayahPengadaan: true,
+        sumberAnggaran: true,
+        jenisPengadaan: true,
+        metodePemilihan: true,
+        jenisPermasalahan: true,
+        kronologi: true,
+        status: true,
+      },
+    });
+
+    return {
+      success: true,
+      data: consultations,
+    };
+  }),
 });

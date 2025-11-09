@@ -14,7 +14,8 @@ import {
   MoreHorizontal,
   Search,
   Trash2,
-  Users
+  Users,
+  FileDown
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -38,12 +39,14 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { api } from "~/trpc/react";
+import * as XLSX from 'xlsx';
 
 export default function DataManagementTab() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   // Debounce search
   useEffect(() => {
@@ -55,7 +58,7 @@ export default function DataManagementTab() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Fetch data
+  // Fetch data untuk table
   const {
     data: consultationsData,
     isLoading,
@@ -65,6 +68,12 @@ export default function DataManagementTab() {
     limit: 10,
     search: debouncedSearch,
     status: statusFilter,
+  });
+
+  // Export mutation
+  const exportMutation = api.consultation.getAllForExport.useQuery(undefined, {
+    enabled: false,
+    refetchOnWindowFocus: false,
   });
 
   // Mutations
@@ -92,6 +101,108 @@ export default function DataManagementTab() {
     } catch (error) {
       alert("Gagal mengubah status");
     }
+  };
+
+  // Fungsi untuk export ke Excel
+  const handleExportExcel = async () => {
+    try {
+      setIsExporting(true);
+      
+      const result = await exportMutation.refetch();
+      
+      if (!result.data?.success || !result.data.data) {
+        throw new Error('Gagal mengambil data');
+      }
+
+      const consultations = result.data.data;
+
+      // Format data untuk Excel
+      const excelData = consultations.map((consultation, index) => ({
+        'No': index + 1,
+        'Tanggal Dibuat': new Date(consultation.createdAt).toLocaleDateString('id-ID'),
+        'Tanggal Konsultasi': consultation.tanggal,
+        'Waktu Konsultasi': consultation.waktu,
+        'Nama Pemohon': consultation.nama,
+        'Instansi': consultation.instansi,
+        'Jabatan': consultation.jabatan,
+        'Alamat': consultation.alamat,
+        'Provinsi': consultation.provinsiPemohon,
+        'No. Telepon': consultation.noTelp,
+        'Jumlah Tamu': consultation.jumlahTamu,
+        'ID Paket Pengadaan': consultation.idPaketPengadaan || '-',
+        'Nama Paket Pengadaan': consultation.namaPaketPengadaan || '-',
+        'Nilai Kontrak': consultation.nilaiKontrak || '-',
+        'TTD Kontrak': consultation.TTDKontrak ? 'Ya' : 'Tidak',
+        'Jenis Kontrak': consultation.jenisKontrak || '-',
+        'Wilayah Pengadaan': consultation.wilayahPengadaan,
+        'Sumber Anggaran': consultation.sumberAnggaran || '-',
+        'Jenis Pengadaan': consultation.jenisPengadaan,
+        'Metode Pemilihan': consultation.metodePemilihan,
+        'Jenis Permasalahan': consultation.jenisPermasalahan,
+        'Kronologi': consultation.kronologi ?? '-',
+        'Status': getStatusLabel(consultation.status),
+      }));
+
+      // Buat workbook dan worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(excelData);
+
+      // Set column widths
+      const colWidths = [
+        { wch: 5 },  // No
+        { wch: 12 }, // Tanggal Dibuat
+        { wch: 12 }, // Tanggal Konsultasi
+        { wch: 10 }, // Waktu Konsultasi
+        { wch: 20 }, // Nama Pemohon
+        { wch: 25 }, // Instansi
+        { wch: 20 }, // Jabatan
+        { wch: 30 }, // Alamat
+        { wch: 15 }, // Provinsi
+        { wch: 15 }, // No. Telepon
+        { wch: 12 }, // Jumlah Tamu
+        { wch: 20 }, // ID Paket Pengadaan
+        { wch: 25 }, // Nama Paket Pengadaan
+        { wch: 15 }, // Nilai Kontrak
+        { wch: 10 }, // TTD Kontrak
+        { wch: 15 }, // Jenis Kontrak
+        { wch: 15 }, // Wilayah Pengadaan
+        { wch: 20 }, // Sumber Anggaran
+        { wch: 20 }, // Jenis Pengadaan
+        { wch: 20 }, // Metode Pemilihan
+        { wch: 25 }, // Jenis Permasalahan
+        { wch: 40 }, // Kronologi
+        { wch: 15 }, // Status
+      ];
+      ws['!cols'] = colWidths;
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Data Konsultasi');
+
+      // Generate file name dengan timestamp
+      const timestamp = new Date().toISOString().split('T')[0];
+      const fileName = `data-konsultasi-${timestamp}.xlsx`;
+
+      // Export file
+      XLSX.writeFile(wb, fileName);
+
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Gagal mengexport data ke Excel');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    const statusLabels: { [key: string]: string } = {
+      DRAFT: "Draft",
+      SUBMITTED: "Submitted",
+      IN_REVIEW: "In Review",
+      PROCESSED: "Processed",
+      COMPLETED: "Completed",
+      REJECTED: "Rejected",
+    };
+    return statusLabels[status] || status;
   };
 
   const getStatusBadge = (status: string) => {
@@ -185,13 +296,32 @@ export default function DataManagementTab() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Export Button */}
+            <Button
+              onClick={handleExportExcel}
+              disabled={isExporting}
+              className="flex items-center gap-2 bg-green-600 text-white hover:bg-green-700"
+            >
+              {isExporting ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <FileDown className="h-4 w-4" />
+                  Export Excel
+                </>
+              )}
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Data Table */}
       <Card className="border-slate-200 bg-white/80 shadow-lg backdrop-blur-sm">
-        <CardHeader className="pb-4">
+        <CardHeader className="flex flex-row items-center justify-between pb-4">
           <CardTitle className="flex items-center gap-2 text-slate-800">
             <FileText className="h-5 w-5" />
             Data Konsultasi
@@ -340,10 +470,6 @@ export default function DataManagementTab() {
                                   <Eye className="h-4 w-4" />
                                   Lihat Detail
                                 </Link>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="flex cursor-pointer items-center gap-2 text-slate-700">
-                                <Download className="h-4 w-4" />
-                                Export PDF
                               </DropdownMenuItem>
                               <DropdownMenu>
                                 <DropdownMenuTrigger className="w-full">

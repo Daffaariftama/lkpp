@@ -63,7 +63,8 @@ const sumberAnggaranOptions = [
   "APBD",
   "SBSN", 
   "Hibah Dalam Negeri",
-  "Hibah Luar Negeri"
+  "Hibah Luar Negeri",
+  "Lainnya",
 ];
 
 const metodePemilihanOptions = [
