@@ -55,19 +55,20 @@ export function SignaturePad({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="w-full max-w-2xl"
+        className="w-full max-w-2xl mx-auto"
       >
         <Card className="bg-white">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <div>
-              <CardTitle className="text-xl">{title}</CardTitle>
-              <p className="text-sm text-gray-600 mt-1">{description}</p>
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-xl sm:text-2xl truncate">{title}</CardTitle>
+              <p className="text-sm text-gray-600 mt-1 hidden sm:block">{description}</p>
+              <p className="text-xs text-gray-600 mt-1 sm:hidden">Berikan tanda tangan di area berikut</p>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="h-8 w-8"
+              className="h-8 w-8 flex-shrink-0 ml-2"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -82,7 +83,7 @@ export function SignaturePad({
                 canvasProps={{
                   width: 600,
                   height: 200,
-                  className: "w-full h-50 bg-white rounded-lg cursor-crosshair"
+                  className: "w-full h-32 sm:h-50 bg-white rounded-lg cursor-crosshair touch-none"
                 }}
                 onEnd={handleEnd}
                 clearOnResize={false}
@@ -98,7 +99,7 @@ export function SignaturePad({
                   exit={{ opacity: 0, height: 0 }}
                   className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-lg"
                 >
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
                   <span className="text-sm">Silakan berikan tanda tangan terlebih dahulu</span>
                 </motion.div>
               )}
@@ -106,38 +107,48 @@ export function SignaturePad({
 
             {/* Instructions */}
             <div className="text-center text-sm text-gray-600">
-              <p>Gunakan mouse atau touch screen untuk memberikan tanda tangan</p>
+              <p className="hidden sm:block">Gunakan mouse atau touch screen untuk memberikan tanda tangan</p>
+              <p className="sm:hidden text-xs">Gunakan jari untuk memberikan tanda tangan</p>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-between gap-3">
+            {/* Action Buttons - Responsive */}
+            <div className="flex flex-col sm:flex-row justify-between gap-3">
+              {/* Clear Button - Full width on mobile, left on desktop */}
               <Button
                 type="button"
                 variant="outline"
                 onClick={clear}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 justify-center order-2 sm:order-1 w-full sm:w-auto"
               >
                 <RotateCcw className="h-4 w-4" />
-                Hapus
+                <span>Hapus</span>
               </Button>
               
-              <div className="flex gap-3">
+              {/* Save & Cancel Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2 w-full sm:w-auto">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={onClose}
+                  className="flex-1 sm:flex-initial"
                 >
                   Batal
                 </Button>
                 <Button
                   type="button"
                   onClick={save}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                  className="flex-1 sm:flex-initial bg-green-600 hover:bg-green-700 flex items-center gap-2 justify-center"
                 >
                   <Check className="h-4 w-4" />
-                  Simpan Tanda Tangan
+                  <span className="sm:inline">Simpan</span>
+                  <span className="hidden sm:inline">Tanda Tangan</span>
                 </Button>
               </div>
+            </div>
+
+            {/* Mobile-specific instructions */}
+            <div className="sm:hidden text-xs text-center text-gray-500 pt-2 border-t border-gray-200">
+              <p>Pastikan tanda tangan jelas dan terbaca</p>
             </div>
           </CardContent>
         </Card>
